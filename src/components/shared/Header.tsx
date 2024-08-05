@@ -1,9 +1,10 @@
 import { cn } from "@/lib/utils";
-import { Container } from "../shared";
+import { Container, SearchInput } from "../shared";
 import React from "react";
 import Image from "next/image";
 import { Button } from "../ui";
 import { ShoppingCart, User } from "lucide-react";
+import Link from "next/link";
 
 
 
@@ -19,12 +20,20 @@ export const Header: React.FC<Props> = ({ className }) => {
 		<header className={cn("border border-b", className)}>
 			<Container className="flex items-center justify-between py-8">
 				{/* левая часть */}
-				<div className="flex gap-4 items-center">
-					<Image src="/logo.png" alt="logo" width={35} height={35} />
-					<div className="">
-						<h1 className="text-2xl uppercase font-black">Next Pizza</h1>
-						<p className="text-sm text-gray-500 leading-3">вкуснее уже некуда</p>
+				<Link href={"/"}>
+					<div className="flex gap-4 items-center">
+						<Image src="/logo.png" alt="logo" width={35} height={35} />
+						<div className="">
+							<h1 className="text-2xl uppercase font-black">Next Pizza</h1>
+							<p className="text-sm text-gray-500 leading-3">вкуснее уже некуда</p>
+						</div>
 					</div>
+				</Link>
+
+				<div className="mx-10 flex-1">
+
+					<SearchInput />
+
 				</div>
 
 				{/* правая часть */}
