@@ -3,8 +3,13 @@
 import { Search } from "lucide-react";
 import React from "react";
 import { cn } from "@/lib/utils";
-import { useClickAway } from "react-use";
+import { useClickAway, useDebounce } from "react-use";
 import Link from "next/link"
+import { Api } from "../../../services/api-client";
+import { Product } from "@prisma/client";
+
+
+
 
 interface Props {
 	className?: string;
@@ -12,12 +17,33 @@ interface Props {
 
 export const SearchInput: React.FC<Props> = ({ className }) => {
 
+	const [searchQuery, setSearchQuery] = React.useState("");
 	const [focused, setFocused] = React.useState(false);
+	const [products, setProducts] = React.useState<Product[]>([]);
 	const ref = React.useRef(null)
 
 	useClickAway(ref, () => {
 		setFocused(false);
 	});
+
+
+
+
+	useDebounce(async () => {
+		try {
+			Api.products.search(searchQuery).then(items =>
+				setProducts(items));
+		} catch (error) {
+			console.error('Error fetching products:', error);
+		}
+	}, 250, [searchQuery])
+
+
+	const onClickItem = () => {
+		setFocused(false);
+		setSearchQuery("");
+		setProducts([])
+	}
 
 	return (
 		<>
@@ -30,19 +56,33 @@ export const SearchInput: React.FC<Props> = ({ className }) => {
 					placeholder="Найти пиццу"
 					className="rounded-2xl outline-none w-full bg-gray-100 pl-11"
 					onFocus={() => setFocused(true)}
+					value={searchQuery}
+					onChange={(e) => setSearchQuery(e.target.value)}
 				/>
-				<div className={cn(
-					"absolute w-full bg-white  rounded-xl py-2 top-14 shadow-md transition-all duration-200 invisible opacity-0 z-30",
-					focused && "visible opacity-100 top-12"
-				)}>
+				{products.length > 0 &&
+					<div className={cn(
+						"absolute w-full bg-white  rounded-xl py-2 top-14 shadow-md transition-all duration-200 invisible opacity-0 z-30",
+						focused && "visible opacity-100 top-12"
+					)}>
 
-					<Link className="flex items-center gap-4 px-3 py-2 hover:bg-primary/10 cursor-pointer" href="/product/1">
-						<img className="rounded-sm h-10 w-10" src="https://media.dodostatic.net/image/r:233x233/11EE7D61304FAF5A98A6958F2BB2D260.webp" width={32} height={32} alt="пицца" />
-						<span>Пицца 1</span>
-					</Link>
+						{
+							products.map((product) => (
+								<Link
+									onClick={onClickItem}
+									key={product.id}
+									className="flex items-center gap-4 px-3 py-2 hover:bg-primary/10 cursor-pointer"
+									href={`/product/${product.id}`}>
+									<img className="rounded-sm h-10 w-10"
+										src={product.imageUrl}
+										width={32} height={32}
+										alt={product.name} />
+									<span>{product.name}</span>
+								</Link>
+							))
+						}
+					</div>
 
-
-				</div>
+				}
 			</div >
 		</>
 	);
