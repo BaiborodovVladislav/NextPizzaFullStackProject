@@ -1,5 +1,8 @@
+// модели беккенда для посгресса от клиента до покупок 
+
 generator client {
      provider = "prisma-client-js" //работа с js клиентом
+      binaryTargets = ["native", "windows"]
 }
 
 datasource db {

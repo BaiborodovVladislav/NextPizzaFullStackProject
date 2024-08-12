@@ -22,6 +22,7 @@ export const ProductsGroupList: React.FC<Props> = ({
 	categoryId,
 	items,
 	listClassName,
+
 }) => {
 	const setActivCategryId = useCategoryStore((state) => state.setActiveId);
 	const intersectionRef = React.useRef(null);
@@ -35,21 +36,24 @@ export const ProductsGroupList: React.FC<Props> = ({
 		}
 	}, [title, categoryId, setActivCategryId, intersection?.isIntersecting])
 
+
 	return (
 		<div className={className} id={title} ref={intersectionRef}>
 			<Title text={title} size="lg" className="mb-5 font-extrabold" />
 
 			<div className={cn("grid grid-cols-3 gap-[50px]", listClassName)}>
 				{
-					items.map((product) => (
-						<ProductCart
-							key={product.id}
-							id={product.id}
-							name={product.name}
-							imageUrl={product.imageUrl}
-							price={product.items[0].price}
-						/>
-					))
+					items.map((product) => {
+						return (
+							<ProductCart
+								key={product.id}
+								id={product.id}
+								name={product.name}
+								imageUrl={product.imageUrl}
+								price={product.productItem && product.productItem.length > 0 ? product.productItem[0].price : "Цена отсутствует"}
+								/>
+						);
+					})
 				}
 			</div>
 		</div>

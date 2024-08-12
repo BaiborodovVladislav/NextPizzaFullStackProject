@@ -3,9 +3,13 @@ import { hashSync } from 'bcrypt'
 import { categories, ingredients, products } from './contains'
 import { Prisma } from '@prisma/client';
 
+{/* рандомайзер цены */ }
+
 const randomDecimalNumber = (min: number, max: number) => {
 	return Math.floor(Math.random() * (max - min) * 10 + min * 10) / 10;
 }
+
+{/* генератор позиций*/ }
 
 const generateProductItem = ({
 	productId,
@@ -23,6 +27,8 @@ const generateProductItem = ({
 		size,
 	} as Prisma.ProductItemUncheckedCreateInput;
 };
+
+{/* функция добовления на постгресс  */ }
 
 async function up() {
 
@@ -167,7 +173,7 @@ async function up() {
 }
 
 
-
+{/* функция удаления данных и пересоздания на постгресс  */ }
 
 async function down() {
 	await prisma.$executeRaw`TRUNCATE TABLE "User" RESTART IDENTITY CASCADE;`
@@ -178,6 +184,8 @@ async function down() {
 	await prisma.$executeRaw`TRUNCATE TABLE "Product" RESTART IDENTITY CASCADE;`
 	await prisma.$executeRaw`TRUNCATE TABLE "ProductItem" RESTART IDENTITY CASCADE;`
 }
+
+{/* функция запуска   */ }
 
 async function main() {
 	try {

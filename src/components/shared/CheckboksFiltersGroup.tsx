@@ -2,19 +2,23 @@
 
 import React from "react";
 import { FilterChecboxProps, FilterCheckbox } from "./FilterCheckbox";
-import { Input } from "../ui";
+import { Input, Skeleton } from "../ui";
 
 type Item = FilterChecboxProps;
 
 interface Props {
 	Title: string;
 	Items: Item[];
-	defaultItems: Item[];
+	defaultItems?: Item[];
 	limit?: number;
+	loading?: boolean,
 	searchInputPlaceholder?: string;
-	onChange?: (values: string[]) => void;
+	onClickCheckbox?: (id: string) => void;
 	defaultValue?: string[];
+	selected?: Set<string>;
 	className?: string;
+	name?: string;
+
 }
 
 export const CheckboxFiltersGroup: React.FC<Props> = ({
@@ -22,31 +26,41 @@ export const CheckboxFiltersGroup: React.FC<Props> = ({
 	className,
 	Items,
 	defaultItems,
-	limit,
+	limit = 6,
 	searchInputPlaceholder = "Поиск...",
-	onChange,
-	defaultValue,
+	onClickCheckbox,
+	loading,
+	selected,
+	name
 
 }) => {
 
 	const [showAll, setShowAll] = React.useState(false);
+	
 	const [searchValue, setSearchValue] = React.useState("");
-	const [selectedValue, setSelectedVale] = React.useState<String[]>(defaultValue || []);
 
-	const list = showAll ? Items.filter((item) => item.text.toLowerCase().includes(searchValue.toLowerCase())) : defaultItems.slice(0, limit);
+	const list = showAll ? Items.filter((item) => item.text.toLowerCase().includes(searchValue.toLowerCase())) : (defaultItems || Items).slice(0, limit);
 
 
 	const onChangeSearcInput = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchValue(e.target.value)
 	}
 
-	const handlerCheckboxs = (value: string) => {
-		const newValueCheckbox = selectedValue.includes(value)
-			? selectedValue.filter((item) => item !== value) : [...selectedValue, value];
-		setSelectedVale(newValueCheckbox);
-		if (onChange) {
-			onChange(newValueCheckbox as string[])
-		}
+	{/* отрисовка на скелетоне списка чекбоксов */ }
+
+	if (loading) {
+		return <div className={className}>
+			<p className="font-bold mb-3">{Title}</p>
+			{
+				...Array(limit)
+					.fill(0)
+					.map((_, index) => (
+						<Skeleton key={index} className="h-6 mb-4 rounded-[8px]" />
+					))
+			}
+			<Skeleton className=" w-28 h-6 mb-4 rounded-[8px]" />
+
+		</div>
 	}
 
 	return (
@@ -61,6 +75,8 @@ export const CheckboxFiltersGroup: React.FC<Props> = ({
 				</div>
 			)}
 
+			{/* вывод чекбоксов */}
+
 			<div className="flex flex-col gap-4 max-h-96 pr-2 overflow-auto scrollbar">
 				{list.map((item, index) => (
 					<FilterCheckbox
@@ -68,8 +84,9 @@ export const CheckboxFiltersGroup: React.FC<Props> = ({
 						text={item.text}
 						value={item.value}
 						endAdornment={item.endAdornment}
-						checked={selectedValue.includes(item.value)} // возможно, здесь нужно использовать какое-то состояние или пропс
-						onCheckedChange={() => handlerCheckboxs(item.value)} // также можешь передать onChange сюда
+						checked={selected?.has(item.value)}
+						onCheckedChange={() => onClickCheckbox?.(item.value)}
+						name={name}
 					/>
 				))}
 			</div>

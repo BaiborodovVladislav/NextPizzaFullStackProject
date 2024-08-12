@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(req: NextRequest) {
 	const query = req.nextUrl.searchParams.get('query') || '';
 
-	console.log('Query:', query);
+	
 
 
 	try {
@@ -18,7 +18,6 @@ export async function GET(req: NextRequest) {
 			take: 5,
 		});
 
-		console.log('Products:', products);
 
 		return NextResponse.json(products);
 	} catch (error) {
