@@ -14,7 +14,7 @@ export const ProductImage: React.FC<Props> = ({ className, imageUrl, size, name 
             <img
                 src={imageUrl}
                 alt={name}
-                className={cn('relative left-2 top-2 transition-all z-10 duration-300', 
+                className={cn('relative left-4 top-14 transition-all z-10 duration-300', 
                     {
                         'w-[300px] h-[300px]': size === 20,
                         'w-[400px] h-[400px]': size === 30,
